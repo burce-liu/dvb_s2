@@ -11,6 +11,7 @@
 #include <vector>
 #include<cmath>
 #include<complex>
+#include<algorithm>
 typedef struct BBHeader
 {
     uint8_t mytype1;

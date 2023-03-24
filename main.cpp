@@ -1,11 +1,16 @@
 #include "dvb_s2.h"
-#pragma once
 #include "getKbch.h"
-#include "generate_crc.h"
 #include "get_bbheader.h"
+#include "crc_data.h"
+#include "scraming.h"
+#include "dvb_bch.h"
+#include "dvb_ldpc.h"
+#include "data_reflect.h"
+#include "data_interweave.h"
+#include "dvb_pl.h"
 // DVB-S2 TS packet
 
-#define CRC_POLY 0xAB
+
 
 
 //create a struct to add DVB-S2 BBheader include 8bits mytpye1, 8bits mytype2,16bits upl,16bits dpl, 8bits sync, 16bits syncd, 8bits crc
@@ -21,41 +26,12 @@ int binarytod(char s[])
     return sum;
 }
 
-vector<bool> scraming(vector<bool> data, int Kbch) {
-    // Implement this function
-    return data;
-}
 
-// Computes the BCH code of a given binary string
-vector<bool> dvb_bch2(vector<bool>& data, int modcod, bool type) {
-    // TODO: Implement BCH encoding
-    return data;
-}
 
-// Computes the LDPC code of a given binary string
-vector<bool> dvb_ldpc(vector<bool>& data, int modcod, bool type) {
-    // TODO: Implement LDPC encoding
-    return data;
-}
 
-// Interweaves the bits of a given binary string
-vector<bool> interweave(vector<bool>& data, int modcod, bool type) {
-    // TODO: Implement bit interleaving
-    return data;
-}
 
-// Reflects the bits of a given binary string
-vector<std::complex<double>> dvb_reflect(vector<bool>& data, int modcod) {
-    // TODO: Implement bit reflection
-    vector<std::complex<double>> complex_ve;
-    return complex_ve;
-}
 
-vector<std::complex<double>> dvb_pl(vector<std::complex<double>> data, int modcod,bool type1,bool type2) {
-    // Implement this function
-    vector<std::complex<double>> complex_ve;
-    return complex_ve;
-}
+
 
 
 
@@ -64,38 +40,6 @@ vector<std::complex<double>> dvb_pl(vector<std::complex<double>> data, int modco
 
 
 //crc
-vector<bool>  crc_data(vector<bool> data)
-{
-    vector<bool> temp3;
-    int data_crc = data.size();
-    int num_crc = data_crc/188/8;
-        for (int i = 0; i < num_crc; i++)
-        {
-            vector<bool> temp2;
-             //将data的每个188*8位的数据分别取出到temp2中
-            for (int j = i*188*8+8; j < (i+1)*188*8; j++)
-               {
-                temp2.push_back(data[j]);
-                temp3.push_back(data[j]);
-               } 
-            //将temp2的数据进行crc校验
-            vector<bool> crc_code = generate_crc(temp2);
-            
-            //释放temp2的内存
-            temp2.clear();
-
-            //将crc_code的数据添加到temp3中
-            for (int k = 0; k < crc_code.size(); k++)
-                {
-                    temp3.push_back(crc_code[k]);
-
-                }
-            cout<<endl;
-        }
-           
-
-        return temp3;
-}
 
 
 int main()
@@ -113,8 +57,6 @@ int main()
     int dfl_pre = upl*floor((Kbch-80)/upl)/8;//预估的dfl长度 字节数
 
     // create a struct BBheader pointer to store the value of BBheader
-        
-
     BBHeader *bbheader = (BBHeader *)malloc(sizeof(BBHeader));
     //将二进制'11110001'赋值给bbheader->mytype1
     // 单TS流 不同步 CCM 非空包删除 滚降系数0.25
@@ -154,11 +96,12 @@ int main()
             unsigned char *buffer = (unsigned char *)malloc(dfl_pre);            
             fread(buffer, dfl_pre, 1, fp);
             //打印buffer的值in binary
+            /*
             for (int i = 0; i < 100; i++)
             {
                 printf("%d\t", buffer[i]);
             }
-            cout<<endl;
+            cout<<endl;*/
 
 
             //将buffer全部转化为bool类型的vector
@@ -172,61 +115,61 @@ int main()
                     temp1.push_back(b[j-1]);
                 }
             }
-        /*    //打印temp1的值
-            int k = 0;
-            cout<<"temp1"<<endl;
-            for (bool b : temp1)
-            {
-                if(k>100)
-                {
-                    break;
-                }
-                else
-                {
-                    k++;
-                    cout<<b<<" ";
-                }
+            //打印temp1的值
+        /* int k = 0;
+         cout<<"temp1"<<endl;
+         for (bool b : temp1)
+         {
+             if(k>100)
+             {
+                 break;
+             }
+             else
+             {
+                 k++;
+                 cout<<b<<" ";
+             }
 
-            }
+         }
 */
 
             //释放掉buffer的内存
             free(buffer);
             //将temp1中的数据按照1504bits分别进行crc-8校验
             vector<bool> data_crc = crc_data(temp1);
-        /*    //打印data_crc的每8位的值转化为十进制打印
-            k = 0;
-            cout<<"data_crc"<<endl;
-            for (bool b : data_crc)
-            {
-                if(k>200)
-                {
-                    break;
-                }
-                else
-                {
-                    k++;
-                    cout<<b<<" ";
-                }
+           //打印data_crc的每8位的值转化为十进制打印
+        /*    k = 0;
+           cout<<"data_crc"<<endl;
+           for (bool b : data_crc)
+           {
+               if(k>200)
+               {
+                   break;
+               }
+               else
+               {
+                   k++;
+                   cout<<b<<" ";
+               }
 
-            }
-            cout<<endl;
+           }
+           cout<<endl;
 
-            //打印data_crc i*188*8-8到i*188*8的值
-            k = 0;
-            cout<<"data_crc"<<endl;
-            for(k=1;k<10;k++)
-            {
-                cout<<k<<"crc:";
-                for(int j=0;j<8;j++)
-                {
-                    cout<<data_crc[k*188*8+j-8]<<" ";
-                }
-                cout<<endl;
-            }
-        */
+           //打印data_crc i*188*8-8到i*188*8的值
+           k = 0;
+           cout<<"data_crc"<<endl;
+           for(k=1;k<10;k++)
+           {
+               cout<<k<<"crc:";
+               for(int j=0;j<8;j++)
+               {
+                   cout<<data_crc[k*188*8+j-8]<<" ";
+               }
+               cout<<endl;
+           }
+       */
             //释放掉vector temp1的内存
-            vector<bool>().swap(temp1);
+            temp1.clear();
 
             //计算bbheader->dpl的值 bit值
             bbheader->dpl = dfl_pre*8;
@@ -249,20 +192,19 @@ int main()
                 data_crc.insert(data_crc.begin(),bbheader_vector[i-1]);
             }
 
-            //
+
             //padding data_crc to Kbch length
             int num = Kbch - data_crc.size();
             for(int i=0;i<num;i++)
             {
-                data_crc.push_back(0);
+                data_crc.push_back(bool(0));
             }
-            cout<<data_crc[data_crc.size()-1];
             
             // scraming
             vector<bool> data_scram = scraming(data_crc,modcod);
 
             // bch
-            vector<bool> data_bch = dvb_bch2(data_scram,modcod,type1);
+            vector<bool> data_bch = dvb_bch(data_scram,modcod,type1);
 
             // ldpc
             vector<bool> data_ldpc = dvb_ldpc(data_bch,modcod,type1);
