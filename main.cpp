@@ -1,3 +1,4 @@
+#include <chrono>
 #include "dvb_s2.h"
 #include "getKbch.h"
 #include "get_bbheader.h"
@@ -11,11 +12,6 @@
 // DVB-S2 TS packet
 
 
-
-
-//create a struct to add DVB-S2 BBheader include 8bits mytpye1, 8bits mytype2,16bits upl,16bits dpl, 8bits sync, 16bits syncd, 8bits crc
-
-
 //创建一个函数 将字符串转化为十进制数
 #define N 16
 int binarytod(char s[])
@@ -26,30 +22,41 @@ int binarytod(char s[])
     return sum;
 }
 
+void print_vector(vector<bool> data, int i, int start)
+{
+    for(int k=start;k<start+i;k++)
+    {
 
+        cout<<data[k]<<" ";
+    }
+}
 
+void print_vector(vector<complex<double>> data, int i, int start)
+{
+    for(int k=start;k<start+i;k++)
+    {
 
+        cout<<data[k]<<" ";
+    }
+}
 
-
-
-
-
-
-
-//turntobool
-
-
-//crc
 
 
 int main()
 {
+    auto start_time = chrono::high_resolution_clock::now();
+
+
+    // 程序代码
+
+
     // initial
     char modulation[]="00111";
     int modcod;
     modcod=binarytod(modulation);
-    bool type1 = 0;
-    bool type2 = 1;
+    bool type1 = false;
+    bool type2 = true;
+    int k = 0;
 
     // get Kbch value and read data length
     int Kbch = getKbch(modcod,type1);
@@ -67,7 +74,7 @@ int main()
     bbheader->syncd = 0x0000;
 
 
-    FILE *fp = fopen("D:\\dvb_s2\\test.ts", "rb");
+    FILE *fp = fopen("D:\\dvb_s2\\overflowqpsk_276_45_2.ts", "rb");
     //读取文件总长度
     fseek(fp, 0, SEEK_END);
     int file_length = ftell(fp);
@@ -80,12 +87,14 @@ int main()
     {
         printf("open file success");
         //判断文件是否读完
-       /* while (~feof(fp))
-        {*/
+        while (file_length>0)
+        {
             //判断此次读入的数据大小是否大于预估的dfl长度
+            cout<<"file_length:"<<file_length<<"bytes"<<endl;
             if (file_length < dfl_pre)
             {
                 dfl_pre = file_length;
+                file_length = 0;
             }
             //如果大于则读入预估的dfl长度，并且将文件长度减去预估的dfl长度
             else
@@ -93,7 +102,7 @@ int main()
                 file_length = file_length - dfl_pre;
             }
             //创建一个buffer用来存储读入的数据 十进制形式
-            unsigned char *buffer = (unsigned char *)malloc(dfl_pre);            
+            unsigned char *buffer = (unsigned char *)malloc(dfl_pre);
             fread(buffer, dfl_pre, 1, fp);
             //打印buffer的值in binary
             /*
@@ -137,8 +146,9 @@ int main()
             free(buffer);
             //将temp1中的数据按照1504bits分别进行crc-8校验
             vector<bool> data_crc = crc_data(temp1);
-           //打印data_crc的每8位的值转化为十进制打印
-        /*    k = 0;
+
+/*           //打印data_crc的每8位的值转化为十进制打印
+           k = 0;
            cout<<"data_crc"<<endl;
            for (bool b : data_crc)
            {
@@ -168,6 +178,7 @@ int main()
                cout<<endl;
            }
        */
+
             //释放掉vector temp1的内存
             temp1.clear();
 
@@ -186,6 +197,7 @@ int main()
 
                     cout<<bbheader_vector[k]<<" ";
             }*/
+
             // 将bbheader_vector的数据添加到vector data_crc最前方
             for(int i=bbheader_vector.size();i>0;i--)
             {
@@ -199,39 +211,58 @@ int main()
             {
                 data_crc.push_back(bool(0));
             }
-            
+
+        /*//打印data_crc的前500个值
+        cout<<"data_pad"<<endl;
+        print_vector(data_crc,500);*/
+
             // scraming
-            vector<bool> data_scram = scraming(data_crc,modcod);
+            vector<bool> data_scram = scraming(data_crc,Kbch);
+
+            //清楚data_crc内存
+            data_crc.clear();
 
             // bch
             vector<bool> data_bch = dvb_bch(data_scram,modcod,type1);
 
-            // ldpc
+
+
+
+/*
+        //打印data_bch的后500个值
+        cout<<endl<<"data_bch"<<endl;
+        print_vector(data_bch,192,Kbch);
+        */
+
             vector<bool> data_ldpc = dvb_ldpc(data_bch,modcod,type1);
 
-            // interweave
+           /* //打印data_bch的后500个值
+            cout<<endl<<"data_ldpc"<<endl;
+            print_vector(data_ldpc,240,data_ldpc.size()-240);
+            */
+
+           // interweave
             vector<bool> data_interweave = interweave(data_ldpc,modcod,type1);
 
+         /*   //打印data_interweave的后500个值
+            cout<<endl<<"data_interweave"<<endl;
+            print_vector(data_interweave,240,0);   */
+
             // reflect
-            vector<std::complex<double>> data_reflect = dvb_reflect(data_interweave,modcod);
+            vector<complex<double>> data_reflect = dvb_reflect(data_interweave,modcod);
 
             // pl
             vector<complex<double>> data_pl = dvb_pl(data_reflect,modcod,type1,type2);
+            auto end_time = chrono::high_resolution_clock::now();
 
+            auto duration = chrono::duration_cast<chrono::microseconds>(end_time - start_time);
 
-            
+            cout << duration.count() << " us" << endl;
 
-            
-
+            }
 
         }
-    //}
-
-
 
     fclose(fp);
-
-
-
 
 }

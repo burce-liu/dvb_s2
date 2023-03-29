@@ -5,5 +5,5 @@
 #ifndef DVB_S2_DVB_BCH_H
 #define DVB_S2_DVB_BCH_H
 #include "dvb_s2.h"
-vector<bool> dvb_bch(vector<bool>& data, int modcod, bool type);
+vector<bool> dvb_bch(vector<bool> data, int modcod, bool type);
 #endif //DVB_S2_DVB_BCH_H

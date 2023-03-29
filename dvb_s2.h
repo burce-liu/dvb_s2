@@ -12,6 +12,9 @@
 #include<cmath>
 #include<complex>
 #include<algorithm>
+//create a struct to add DVB-S2 BBheader include 8bits mytpye1, 8bits mytype2,
+//16bits upl,16bits dpl, 8bits sync, 16bits syncd, 8bits crc
+
 typedef struct BBHeader
 {
     uint8_t mytype1;

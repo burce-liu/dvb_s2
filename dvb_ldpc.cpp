@@ -10,14 +10,14 @@
 
 vector<bool> dvb_ldpc(vector<bool> data, int modcod, bool type) {
     int n = 0, k = 0, m = 0, q = 0;
-    vector<bool> p;
-
+    int index = 0;
     if (~type) {
-    p.reserve(64800);
+
         if (modcod == 1) {
             n = 64800;//码字长
             k = 16200;//信息位长
             m = n - k;//校验位长
+            vector<bool> p(m, false);
             q = 135;//q的值
             const int H11[15][12] =
                     {
@@ -103,8 +103,10 @@ vector<bool> dvb_ldpc(vector<bool> data, int modcod, bool type) {
                         }
                     }
                 }
+
                 else
                 {
+
                     for(int k1=0;k1<360;k1++)
                     {
                         for(int j=0;j<cols_H12;j++)
@@ -119,16 +121,23 @@ vector<bool> dvb_ldpc(vector<bool> data, int modcod, bool type) {
             {
                 p[i]=p[i]^p[i-1];
             }
+                        //将p的值插入到data中
+            for(int i = 0; i < m; i++)
+            {
+                data.push_back(p[i]);
+            }
+        }
 
-        } else if (modcod == 2) {
+        else if (modcod == 2) {
             n = 64800;//码字长
             k = 21600;//信息位长
             m = n - k;//校验位长
+            vector<bool> p(m, false);
             q = 120;//q的值
             const int H11[20][12] = {34903, 20927, 32093, 1052, 25611, 16093, 16454, 5520, 506, 37399, 18518, 21120,
-                                     {11636, 14594, 22158, 14763, 15333, 6838, 22222, 37856, 14985, 31041, 18704,
+                                 {11636, 14594, 22158, 14763, 15333, 6838, 22222, 37856, 14985, 31041, 18704,
                                       32910},
-                                     {17449, 1665, 35639, 16624, 12867, 12449, 10241, 11650, 25622, 34372, 19878,
+                                 {17449, 1665, 35639, 16624, 12867, 12449, 10241, 11650, 25622, 34372, 19878,
                                       26894},
                                      {29235, 19780, 36056, 20129, 20029, 5457, 8157, 35554, 21237, 7943, 13873, 14980},
                                      {9912, 7143, 35911, 12043, 17360, 37253, 25588, 11827, 29152, 21936, 24125, 40870},
@@ -230,6 +239,11 @@ vector<bool> dvb_ldpc(vector<bool> data, int modcod, bool type) {
                         {p[(H12[i-rows_H11][j]+k1*q)%m]=p[(H12[i-rows_H11][j]+k1*q)%m]^data[i*360+k1];}
                     }
                 }
+                        //将p的值插入到data中
+            for(int i = 0; i < m; i++)
+            {
+                data.push_back(p[i]);
+            }
 
             }
 
@@ -243,6 +257,7 @@ vector<bool> dvb_ldpc(vector<bool> data, int modcod, bool type) {
             n = 64800;//码字长
             k = 25920;//信息位长
             m = n - k;//校验位长
+            vector<bool> p(m, false);
             q = 108;//q的值
             const int H11[24][12] = {
                     {31413, 18834, 28884, 947,   23050, 14484, 14809, 4968,  455,   33659, 16666, 19008},
@@ -361,6 +376,7 @@ vector<bool> dvb_ldpc(vector<bool> data, int modcod, bool type) {
                     }
                 }
 
+
             }
 
 //异或
@@ -368,11 +384,17 @@ vector<bool> dvb_ldpc(vector<bool> data, int modcod, bool type) {
             {
                 p[i]=p[i]^p[i-1];
             }
+                        //将p的值插入到data中
+            for(int i = 0; i < m; i++)
+            {
+                data.push_back(p[i]);
+            }
         }
         else if (modcod == 4) {
             n = 64800;//码字长
             k = 32400;//信息位长
             m = n - k;//校验位长
+            vector<bool> p(m, false);
             q = 90;//q的值
             const int H11[36][8] = {{54, 9318,  14392, 27561, 26909, 10219, 2534,  8597},
                                     {55, 7263,  4635,  2530,  28130, 3033,  23830, 3651},
@@ -508,6 +530,7 @@ vector<bool> dvb_ldpc(vector<bool> data, int modcod, bool type) {
                     }
                 }
 
+
             }
 
 //异或
@@ -515,11 +538,17 @@ vector<bool> dvb_ldpc(vector<bool> data, int modcod, bool type) {
             {
                 p[i]=p[i]^p[i-1];
             }
+                        //将p的值插入到data中
+            for(int i = 0; i < m; i++)
+            {
+                data.push_back(p[i]);
+            }
         }
         else if (modcod == 5 || modcod == 12) {
             n = 64800;//码字长
             k = 38880;//信息位长
             m = n - k;//校验位长
+            vector<bool> p(m, false);
             q = 72;//q的值
             const int H11[36][12] = {
                     {22422, 10282, 11626, 19997, 11161, 2922,  3122,  99,    5625,  17064, 8270,  179},
@@ -675,6 +704,7 @@ vector<bool> dvb_ldpc(vector<bool> data, int modcod, bool type) {
                     }
                 }
 
+
             }
 
 //异或
@@ -682,11 +712,17 @@ vector<bool> dvb_ldpc(vector<bool> data, int modcod, bool type) {
             {
                 p[i]=p[i]^p[i-1];
             }
+                        //将p的值插入到data中
+            for(int i = 0; i < m; i++)
+            {
+                data.push_back(p[i]);
+            }
         }
         else if (modcod == 6 || modcod == 13 || modcod == 18) {
             n = 64800;//码字长
             k = 43200;//信息位长
             m = n - k;//校验位长
+            vector<bool> p(m, false);
             q = 60;//q的值
             const int H11[12][13] = {
                     {0,  10491, 16043, 506,   12826, 8065,  8226,  2767,  240,   18673, 9279,  10579, 20928},
@@ -861,12 +897,18 @@ vector<bool> dvb_ldpc(vector<bool> data, int modcod, bool type) {
             {
                 p[i]=p[i]^p[i-1];
             }
+                        //将p的值插入到data中
+            for(int i = 0; i < m; i++)
+            {
+                data.push_back(p[i]);
+            }
         }
         else if (modcod == 7 || modcod == 14 || modcod == 19 || modcod == 24) {
             n = 64800;//码字长
             k = 48600;//信息位长
             m = n - k;//校验位长
             q = 45;//q的值
+            vector<bool> p(m, false);
             const int H11[15][12] = {{0,  6385,  7901,  14611, 13389, 11200, 3252,  5243,  2504,  2722,  821,   7374},
                                      {1,  11359, 2698,  357,   13824, 12772, 7244,  6752,  15310, 852,   2001,  11417},
                                      {2,  7862,  7977,  6321,  13612, 12197, 14449, 15137, 13860, 1708,  6399,  13444},
@@ -1027,7 +1069,10 @@ vector<bool> dvb_ldpc(vector<bool> data, int modcod, bool type) {
                         if(k1==0)
                         {
                             for(int j=0;j<cols_H11;j++)
-                            {p[H11[i][j]]=p[H11[i][j]]^data[i*360+k1];}
+                            {
+                                index = H11[i][j];
+                                p[index]=p[index]^data[i*360+k1];
+                            }
                         }
                         else
                         {
@@ -1052,11 +1097,19 @@ vector<bool> dvb_ldpc(vector<bool> data, int modcod, bool type) {
             {
                 p[i]=p[i]^p[i-1];
             }
+            //将p的值插入到data中
+            for(int i = 0; i < m; i++)
+            {
+                data.push_back(p[i]);
+            }
+
+            
         }
         else if (modcod == 8 || modcod == 20 || modcod == 25) {
             n = 64800;//码字长
             k = 51840;//信息位长
             m = n - k;//校验位长
+            vector<bool> p(m, false);
             q = 36;//q的值
             const int H11[18][11] = {{0,  149,   11212, 5575,  6360,  12559, 8108,  8505,  408,   10026, 12828},
                                      {1,  5237,  490,   10677, 4998,  3869,  3734,  3092,  3509,  7703,  10305},
@@ -1252,11 +1305,17 @@ vector<bool> dvb_ldpc(vector<bool> data, int modcod, bool type) {
             {
                 p[i]=p[i]^p[i-1];
             }
+                        //将p的值插入到data中
+            for(int i = 0; i < m; i++)
+            {
+                data.push_back(p[i]);
+            }
         }
         else if (modcod == 9 || modcod == 15 || modcod == 21 || modcod == 26) {
             n = 64800;//码字长
             k = 54000;//信息位长
             m = n - k;//校验位长
+            vector<bool> p(m, false);
             q = 30;//q的值
             const int H11[15][13] = {{0,  4362,  416,   8909,  4156,  3216,  3112, 2560,  2912,  6405,  8593, 4969, 6723},
                                      {1,  2479,  1786,  8978,  3011,  4339,  9313, 6397,  2957,  7288,  5484, 6031, 10217},
@@ -1459,11 +1518,17 @@ vector<bool> dvb_ldpc(vector<bool> data, int modcod, bool type) {
             {
                 p[i]=p[i]^p[i-1];
             }
+                        //将p的值插入到data中
+            for(int i = 0; i < m; i++)
+            {
+                data.push_back(p[i]);
+            }
         }
         else if (modcod == 10 || modcod == 16 || modcod == 22 || modcod == 27) {
             n = 64800;//码字长
             k = 57600;//信息位长
             m = n - k;//校验位长
+            vector<bool> p(m, false);
             q = 20;//q的值
             const int H11[20][4] = {{0,  6235, 2848, 3222},
                                     {1,  5800, 3492, 5348},
@@ -1675,11 +1740,17 @@ vector<bool> dvb_ldpc(vector<bool> data, int modcod, bool type) {
             {
                 p[i]=p[i]^p[i-1];
             }
+                        //将p的值插入到data中
+            for(int i = 0; i < m; i++)
+            {
+                data.push_back(p[i]);
+            }
         }
         else if (modcod == 11 || modcod == 17 || modcod == 23 || modcod == 28) {
             n = 64800;//码字长
             k = 58320;//信息位长
             m = n - k;//校验位长
+            vector<bool> p(m, false);
             q = 18;//q的值
             const int H11[18][4] = {{0,  5611, 2563, 2900},
                                     {1,  5220, 3143, 4813},
@@ -1894,13 +1965,19 @@ vector<bool> dvb_ldpc(vector<bool> data, int modcod, bool type) {
             {
                 p[i]=p[i]^p[i-1];
             }
+                        //将p的值插入到data中
+            for(int i = 0; i < m; i++)
+            {
+                data.push_back(p[i]);
+            }
         }
         else {
-            p.reserve(16200);
+
             if (modcod == 1) {
                 n = 16200;//码字长
                 k = 3240;//信息位长
                 m = n - k;//校验位长
+                vector<bool> p(m, false);
                 q = 36;//q的值
                 const int H11[4][12] = {{6295,  9626, 304,  7695,  4839, 4936,  1660, 144,   11203, 5567,  6347, 12557},
                                         {10691, 4988, 3859, 3734,  3071, 3494,  7687, 10313, 5964,  8069,  8296, 11090},
@@ -1962,11 +2039,17 @@ vector<bool> dvb_ldpc(vector<bool> data, int modcod, bool type) {
                 {
                     p[i]=p[i]^p[i-1];
                 }
+                            //将p的值插入到data中
+            for(int i = 0; i < m; i++)
+            {
+                data.push_back(p[i]);
+            }
             }
             else if (modcod == 2) {
                 n = 16200;//码字长
                 k = 5400;//信息位长
                 m = n - k;//校验位长
+                vector<bool> p(m, false);
                 q = 30;//q的值
                 const int H11[5][12] = {{416,  8909,  4156, 3216,  3112,  2560, 2912, 6405, 8593, 4969,  6723,  6912},
                                         {8978, 3011,  4339, 9312,  6396,  2957, 7288, 5485, 6031, 10218, 2226,  3575},
@@ -2034,11 +2117,17 @@ vector<bool> dvb_ldpc(vector<bool> data, int modcod, bool type) {
                 {
                     p[i]=p[i]^p[i-1];
                 }
+                            //将p的值插入到data中
+            for(int i = 0; i < m; i++)
+            {
+                data.push_back(p[i]);
+            }
             }
             else if (modcod == 3) {
                 n = 16200;//码字长
                 k = 6480;//信息位长
                 m = n - k;//校验位长
+                vector<bool> p(m, false);
                 q = 27;//q的值
                 const int H11[6][12] = {{5650, 4143, 8750, 583,  6720, 8071, 635,  1767, 1344, 6922, 738,  6658},
                                         {5696, 1685, 3207, 415,  7019, 5023, 5608, 2605, 857,  6915, 1770, 8016},
@@ -2108,11 +2197,17 @@ vector<bool> dvb_ldpc(vector<bool> data, int modcod, bool type) {
                 {
                     p[i]=p[i]^p[i-1];
                 }
+                            //将p的值插入到data中
+            for(int i = 0; i < m; i++)
+            {
+                data.push_back(p[i]);
+            }
             }
             else if (modcod == 4) {
                 n = 16200;//码字长
                 k = 7200;//信息位长
                 m = n - k;//校验位长
+                vector<bool> p(m, false);
                 q = 25;//q的值
                 const int H11[5][8] = {{20, 712,  2386, 6354, 4061, 1062, 5045, 5158},
                                        {21, 2543, 5748, 4822, 2348, 3089, 6328, 5876},
@@ -2184,11 +2279,17 @@ vector<bool> dvb_ldpc(vector<bool> data, int modcod, bool type) {
                 {
                     p[i]=p[i]^p[i-1];
                 }
+                            //将p的值插入到data中
+            for(int i = 0; i < m; i++)
+            {
+                data.push_back(p[i]);
+            }
             }
             else if (modcod == 5 || modcod == 12) {
                 n = 16200;//码字长
                 k = 9720;//信息位长
                 m = n - k;//校验位长
+                vector<bool> p(m, false);
                 q = 18;//q的值
                 const int H11[9][12] = {{2765, 5713, 6426, 3596, 1374, 4811, 2182, 544,  3394, 2840, 4310, 771},
                                         {4951, 211,  2208, 723,  1246, 2928, 398,  5739, 265,  5601, 5993, 2615},
@@ -2267,11 +2368,17 @@ vector<bool> dvb_ldpc(vector<bool> data, int modcod, bool type) {
                 {
                     p[i]=p[i]^p[i-1];
                 }
+                            //将p的值插入到data中
+            for(int i = 0; i < m; i++)
+            {
+                data.push_back(p[i]);
+            }
             }
             else if (modcod == 6 || modcod == 13 || modcod == 18) {
                 n = 16200;//码字长
                 k = 10800;//信息位长
                 m = n - k;//校验位长
+                vector<bool> p(m, false);
                 q = 15;//q的值
                 const int H11[3][13] = {{0, 2084, 1613, 1548, 1286, 1460, 3196, 4297, 2481, 3369, 3451, 4620, 2622},
                                         {1, 122,  1516, 3448, 2880, 1407, 1847, 3799, 3529, 373,  971,  4358, 3108},
@@ -2353,11 +2460,17 @@ vector<bool> dvb_ldpc(vector<bool> data, int modcod, bool type) {
                 {
                     p[i]=p[i]^p[i-1];
                 }
+                            //将p的值插入到data中
+            for(int i = 0; i < m; i++)
+            {
+                data.push_back(p[i]);
+            }
             }
             else if (modcod == 7 || modcod == 14 || modcod == 19 || modcod == 24) {
                 n = 16200;//码字长
                 k = 11880;//信息位长
                 m = n - k;//校验位长
+                vector<bool> p(m, false);
                 q = 12;//q的值
                 const int H11[1][12] = {3, 3198, 478, 4207, 1481, 1009, 2616, 1924, 3437, 554, 683, 1801};
                 const int H12[32][3] = {
@@ -2442,11 +2555,17 @@ vector<bool> dvb_ldpc(vector<bool> data, int modcod, bool type) {
                 {
                     p[i]=p[i]^p[i-1];
                 }
+                            //将p的值插入到data中
+            for(int i = 0; i < m; i++)
+            {
+                data.push_back(p[i]);
+            }
             }
             else if (modcod == 8 || modcod == 20 || modcod == 25) {
                 n = 16200;//码字长
                 k = 12600;//信息位长
                 m = n - k;//校验位长
+                vector<bool> p(m, false);
                 q = 10;//q的值
                 const int H11[36][3] = {{5, 896,  1565},
                                         {6, 2493, 184},
@@ -2533,11 +2652,17 @@ vector<bool> dvb_ldpc(vector<bool> data, int modcod, bool type) {
                 {
                     p[i]=p[i]^p[i-1];
                 }
+                            //将p的值插入到data中
+            for(int i = 0; i < m; i++)
+            {
+                data.push_back(p[i]);
+            }
             }
             else if (modcod == 9 || modcod == 15 || modcod == 21 || modcod == 26) {
                 n = 16200;//码字长
                 k = 13320;//信息位长
                 m = n - k;//校验位长
+                vector<bool> p(m, false);
                 q = 8;//q的值
                 const int H11[1][13] = {{3, 2409, 499, 1481, 908, 559, 716, 1270, 333, 2508, 2264, 1702, 2805}};
                 const int H12[36][3] = {
@@ -2627,11 +2752,17 @@ vector<bool> dvb_ldpc(vector<bool> data, int modcod, bool type) {
                 {
                     p[i]=p[i]^p[i-1];
                 }
+                            //将p的值插入到data中
+            for(int i = 0; i < m; i++)
+            {
+                data.push_back(p[i]);
+            }
             }
             else if (modcod == 10 || modcod == 16 || modcod == 22 || modcod == 27) {
                 n = 16200;//码字长
                 k = 14400;//信息位长
                 m = n - k;//校验位长
+                vector<bool> p(m, false);
                 q = 5;//q的值
                 const int H11[5][4] = {{0, 1558, 712,  805},
                                        {1, 1450, 873,  1337},
@@ -2724,6 +2855,11 @@ vector<bool> dvb_ldpc(vector<bool> data, int modcod, bool type) {
                 {
                     p[i]=p[i]^p[i-1];
                 }
+                            //将p的值插入到data中
+            for(int i = 0; i < m; i++)
+            {
+                data.push_back(p[i]);
+            }
             }
             else if (modcod == 11 || modcod == 17 || modcod == 23 || modcod == 28)
                 n = 0;
@@ -2734,5 +2870,6 @@ vector<bool> dvb_ldpc(vector<bool> data, int modcod, bool type) {
 
 
     }
-    return p;
+
+    return data;
 }

@@ -67,10 +67,12 @@ vector<bool> build_bch_ploy( int modcod, bool type)
     return g;
 }
 
-vector<bool> dvb_bch2(vector<bool>& data, int modcod, bool type) {
+vector<bool> dvb_bch(vector<bool> data, int modcod, bool type)
+{
     // TODO: Implement BCH encoding
           // Normal polynomials
     vector<bool> g = build_bch_ploy(modcod,type);
+
     //计算余数
     int n = data.size(), k = g.size() - 1;
     vector<bool> remainder = data;
@@ -86,8 +88,14 @@ vector<bool> dvb_bch2(vector<bool>& data, int modcod, bool type) {
             }
         }
     }
+// bch code 到此正确
     //将余数添加到data后面
     data.insert(data.end(), remainder.begin() + n , remainder.end());
-
+   /* cout<<endl<<"bch_code"<<endl;
+    for(int i = n; i<data.size();i++)
+    {
+        cout<<data[i]<<' ';
+    }
+*/
     return data;
 }
